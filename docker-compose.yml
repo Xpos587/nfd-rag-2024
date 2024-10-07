@@ -1,0 +1,29 @@
+networks:
+  net:
+    driver: bridge
+
+services:
+  server:
+    image: ghcr.io/chroma-core/chroma:0.5.12.dev20
+    container_name: chroma
+    volumes:
+      # Имейте в виду, что индексированные данные расположены в папке «/chroma/chroma/».
+      # Конфигурация по умолчанию для persist_directory в chromadb/config.py
+      # Подробнее о развертывании: https://docs.trychroma.com/deployment.
+      - ./chroma_data:/chroma/chroma
+    command: "--workers 1 --host 0.0.0.0 --port 8000 --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=TRUE
+      - PERSIST_DIRECTORY=${PERSIST_DIRECTORY:-/chroma/chroma}
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    healthcheck:
+      # Отрегулируйте ниже, чтобы он соответствовал порту вашего контейнера
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net
