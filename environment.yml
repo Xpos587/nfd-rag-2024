@@ -20,4 +20,4 @@ dependencies:
     - black
     - sentence_transformers
     - pymupdf4llm
-    - pypandoc-binary
+    - watchdog
