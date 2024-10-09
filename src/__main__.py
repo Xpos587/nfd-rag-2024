@@ -3,6 +3,7 @@ import logging
 import os
 
 import chromadb
+import chromadb.config
 
 from src.config import CHROMA_HOST, CHROMA_PORT, KNOWLEDGE_BASE_PATH
 from src.document_processor import process_document
@@ -31,7 +32,9 @@ async def initial_load(path: str, chroma_client: chromadb.AsyncClientAPI):
 async def main():
     # Инициализация клиента Chroma
     chroma_client = await chromadb.AsyncHttpClient(
-        host=CHROMA_HOST, port=CHROMA_PORT
+        host=CHROMA_HOST,
+        port=CHROMA_PORT,
+        settings=chromadb.config.Settings(anonymized_telemetry=False),
     )
 
     # Начальная загрузка всех документов
